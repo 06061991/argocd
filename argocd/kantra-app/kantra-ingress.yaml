@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kantra-ingress
+spec: 
+  ingressClassName: nginx
+  rules:
+  - host: app.kantra.com  
+    http: 
+      paths: 
+      - path: /
+        pathType: Prefix  
+        backend: 
+          service:
+            name: kantra-svc
+            port:  
+              number: 4200

@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kantra
+  namespace: internship
+
+spec:
+  replicas: 1
+  
+  template:
+    metadata:
+      labels:
+        app: kantra-pod
+    spec:
+      containers:
+      - name: 9antra
+        image: 06061991/9antra:latest
+        ports:
+        - containerPort : 80
+        resources :
+          requests:
+            memory: "256Mi"
+            cpu : "250m"
+          limits: 
+            memory: "512Mi"
+            cpu: "500m"
+  selector:
+    matchLabels: 
+      app : kantra-pod

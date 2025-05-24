@@ -1,0 +1,93 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-conf
+data:
+  nginx.conf: |
+    user nginx;
+    events {
+      worker_connections 768;
+    }
+
+    http {
+      server {
+        listen 80;
+        root /usr/share/nginx/html;
+        index index.html;
+        location / {
+            autoindex on;
+        }
+      }
+    }
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc
+spec:
+  storageClassName: standard
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  namespace: internship
+spec:
+  selector:
+    matchLabels:
+      app: clear-nginx
+  template:
+    metadata:
+      labels:
+        app: clear-nginx
+    spec:
+      initContainers:
+        - name: init-container
+          image: busybox
+          command: ['sh', '-c', 'mkdir -p /usr/share/nginx/html && echo "Hello K8s" > /usr/share/nginx/html/index.html']
+          volumeMounts:
+            - name: site-data
+              mountPath: /usr/share/nginx/html
+      containers:
+        - name: clear-nginx
+          image: nginx
+          volumeMounts:
+            - mountPath: /usr/share/nginx/html
+              name: site-data
+            - mountPath: /etc/nginx/nginx.conf
+              name: nginx-config
+              subPath: nginx.conf
+          ports:
+            - containerPort: 80
+      volumes:
+        - name: site-data
+          persistentVolumeClaim:
+            claimName: pvc
+        - name: nginx-config
+          configMap:
+            name: nginx-conf
+            items:
+              - key: nginx.conf
+                path: nginx.conf
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+spec:
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: 80
+  selector:
+    app: clear-nginx
+  type: NodePort

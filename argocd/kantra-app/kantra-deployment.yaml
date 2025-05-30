@@ -6,7 +6,9 @@ metadata:
 
 spec:
   replicas: 1
-  
+  selector:
+    matchLabels: 
+      app: kantra-pod
   template:
     metadata:
       labels:
@@ -14,13 +16,16 @@ spec:
     spec:
       containers:
       - name: 9antra
-        image: 06061991/9antra:latest
+        image: asslam1991/9antra:latest
         ports:
-        - containerPort : 80
+        - containerPort: 80
+        env:
+            - name: GATEWAY_API_URL
+              value: "http://backend:8080"  # à adapter selon ton cas
         resources :
           requests:
             memory: "256Mi"
-            cpu : "250m"
+            cpu: "250m"
           limits: 
             memory: "512Mi"
             cpu: "500m"

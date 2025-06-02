@@ -9,7 +9,7 @@ spec:
     namespace: internship
     server: https://kubernetes.default.svc # ken bch namlou apply manual al cluster nktbou   https://kubernetes.default.svc
   source:
-    path: argocd/kantra-app # you chould provide the folder in the git repo
+    path: kantra-app # you chould provide the folder in the git repo
     repoURL: "https://github.com/06061991/argocd.git" # the url of the github repository
     targetRevision: HEAD # the branch of the github repository.We can use Head or a specific version
   syncPolicy:
